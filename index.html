@@ -139,7 +139,7 @@
             <!-- Calculate SEF and Difference from JF -->
             <div class="form-group">
                 <label for="inputJF">Calculate SEF, f, and Difference from JF:</label>
-                <input type="number" id="inputJF" step="any" placeholder="Enter JF in %" min="-100" max="100">
+                <input type="number" id="inputJF" step="any" placeholder="Enter JF in %" min="0" max="100">
                 <button onclick="calculateFromJF()">Calculate from JF</button>
                 <div class="result" id="resultFromJF"></div>
             </div>
@@ -147,7 +147,7 @@
             <!-- Calculate JF and Difference from SEF -->
             <div class="form-group">
                 <label for="inputSEF">Calculate JF, f, and Difference from SEF:</label>
-                <input type="number" id="inputSEF" step="any" placeholder="Enter SEF in %" min="0" max="200">
+                <input type="number" id="inputSEF" step="any" placeholder="Enter SEF in %" min="0" max="100">
                 <button onclick="calculateFromSEF()">Calculate from SEF</button>
                 <div class="result" id="resultFromSEF"></div>
             </div>
