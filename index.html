@@ -293,19 +293,14 @@
         function calculateFromJF() {
             const JF_input = document.getElementById('inputJF').value.trim();
             const JF = parseFloat(JF_input);
-            if(isNaN(JF) || JF < -100 || JF > 100) {
-                document.getElementById('resultFromJF').innerText = 'Please enter a valid JF between -100% and 100%.';
+            if(isNaN(JF) || JF < 0 || JF > 100) {
+                document.getElementById('resultFromJF').innerText = 'Please enter a valid JF between 0% and 100%.';
                 clearHighlights();
                 return;
             }
             // Convert percentage to decimal
             const JF_decimal = JF / 100;
-            // Handle case when 1 + JF_decimal = 0 (JF = -100%)
-            if (JF_decimal === -1) {
-                document.getElementById('resultFromJF').innerText = 'Undefined (division by zero). JF cannot be -100%.';
-                clearHighlights();
-                return;
-            }
+
             // Calculate f
             const f_decimal = (1 - JF_decimal) / (1 + JF_decimal);
             const f_percent = f_decimal * 100;
