@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>JF and SEF Functions</title>
+    <!-- Include Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Include MathJax -->
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <!-- Basic Styling -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            background-color: #f5f5f5;
+        }
+        h1, h2 {
+            text-align: center;
+        }
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background-color: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+        }
+        .graph-container {
+            position: relative;
+            height: 400px;
+            width: 100%;
+        }
+        .form-section {
+            margin-top: 50px;
+        }
+        .form-group {
+            margin-bottom: 35px;
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 8px;
+        }
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+            border: 2px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        button {
+            padding: 12px 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        .result {
+            margin-top: 12px;
+            padding: 12px;
+            background-color: #e2e3e5;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        @media (max-width: 600px) {
+            .graph-container {
+                height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Exploring JF and SEF Functions</h1>
+
+        <!-- Context Section -->
+        <section>
+            <p>
+                In this analysis:
+            </p>
+            <ul>
+                <li><strong>JF (Jongkees' Formula):</strong> Represents Jongkees' Formula.</li>
+                <li><strong>SEF (Strong Ear Formula):</strong> Represents the Strong Ear Formula.</li>
+                <li><strong>f:</strong> The ratio of "weak ear" relative to "strong ear". It is a dimensionless parameter where \( 0\% \leq f \leq 100\% \).</li>
+            </ul>
+
+        </section>
+
+        <!-- Displaying Formulas -->
+        <section>
+            <h2>Formulas</h2>
+            <p>
+                The functions are defined as:
+            </p>
+            <p>
+                \(
+                    \quad \quad \text{JF} = \frac{1 - f}{1 + f} 
+                \quad \quad \quad
+                 \text{SEF} = 1 - f \)
+            </p>
+            <p>
+                Expressed in terms of each other:
+            </p>
+            <p>
+                \( \quad \quad  \text{SEF}(\text{JF}) = \frac{2 \times \text{JF}}{1 + \text{JF}} 
+                    \quad \quad \quad
+                 \text{JF}(\text{SEF}) = \frac{\text{SEF}}{2 - \text{SEF}} \)
+            </p>
+            <p>
+                Differences:
+            </p>
+            <p>
+                \( \quad \quad \text{SEF} - \text{JF} = \frac{\text{JF}(1 - \text{JF})}{1 + \text{JF}} \quad\) as a function of \( \text{JF} \)
+            </p>
+            <p>
+                \( \quad \quad \text{SEF} - \text{JF} = \frac{\text{SEF}(1 - \text{SEF})}{2 - \text{SEF}} \quad \) as a function of \( \text{SEF} \)
+            </p>
+        </section>
+
+        <!-- Graph Section -->
+        <section>
+            <h2>Graphs of SEF(f) and JF(f)</h2>
+            <div class="graph-container">
+                <canvas id="functionsChart"></canvas>
+            </div>
+        </section>
+
+        <!-- Interactive Calculations -->
+        <section class="form-section">
+            <h2>Interactive Calculations</h2>
+
+            <!-- Calculate SEF and Difference from JF -->
+            <div class="form-group">
+                <label for="inputJF">Calculate SEF, f, and Difference from JF:</label>
+                <input type="number" id="inputJF" step="any" placeholder="Enter JF in %" min="-100" max="100">
+                <button onclick="calculateFromJF()">Calculate from JF</button>
+                <div class="result" id="resultFromJF"></div>
+            </div>
+
+            <!-- Calculate JF and Difference from SEF -->
+            <div class="form-group">
+                <label for="inputSEF">Calculate JF, f, and Difference from SEF:</label>
+                <input type="number" id="inputSEF" step="any" placeholder="Enter SEF in %" min="0" max="200">
+                <button onclick="calculateFromSEF()">Calculate from SEF</button>
+                <div class="result" id="resultFromSEF"></div>
+            </div>
+        </section>
+    </div>
+
+    <!-- JavaScript for Charts and Calculations -->
+    <script>
+        // Function Definitions
+        function SEF_func(f) {
+            return 1 - f;
+        }
+
+        function JF_func(f) {
+            return (1 - f) / (1 + f);
+        }
+
+        // Initialize Chart with SEF(f) and JF(f)
+        const ctx = document.getElementById('functionsChart').getContext('2d');
+        const fValues = [];
+        const SEFValues = [];
+        const JFValues = [];
+
+        // Include f = 0% and f = 100%
+        for(let i = 0; i <= 100; i++) { // 0% to 100%
+            let f = i / 100;
+            fValues.push(f); // Numeric value for linear x-axis
+            SEFValues.push(SEF_func(f) * 100); // Convert to percentage
+            JFValues.push(JF_func(f) * 100);   // Convert to percentage
+        }
+
+        // Create the main chart
+        const functionsChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                datasets: [
+                    {
+                        label: 'SEF(f) = 1 - f',
+                        data: SEFValues.map((y, index) => ({x: fValues[index] * 100, y: y})), // {x: f%, y: SEF%}
+                        borderColor: 'rgba(255, 0, 0, 1)', // Red for SEF
+                        fill: false,
+                        tension: 0.1
+                    },
+                    {
+                        label: 'JF(f) = (1 - f)/(1 + f)',
+                        data: JFValues.map((y, index) => ({x: fValues[index] * 100, y: y})), // {x: f%, y: JF%}
+                        borderColor: 'rgba(0, 0, 255, 1)', // Blue for JF
+                        fill: false,
+                        tension: 0.1
+                    },
+                    // Difference Line Dataset (initially hidden)
+                    {
+                        label: 'Difference Line',
+                        type: 'line', // Explicitly set type to 'line'
+                        data: [],
+                        borderColor: 'rgba(0, 0, 0, 1)', // Black for difference
+                        borderWidth: 2,
+                        fill: false,
+                        tension: 0,
+                        pointRadius: 0,
+                        showLine: true,
+                        hidden: true
+                    },
+                    // SEF Point Dataset (initially hidden)
+                    {
+                        label: 'SEF Point',
+                        type: 'scatter',
+                        data: [],
+                        backgroundColor: 'rgba(255, 0, 0, 1)', // Red
+                        pointRadius: 6,
+                        showLine: false,
+                        hidden: true
+                    },
+                    // JF Point Dataset (initially hidden)
+                    {
+                        label: 'JF Point',
+                        type: 'scatter',
+                        data: [],
+                        backgroundColor: 'rgba(0, 0, 255, 1)', // Blue
+                        pointRadius: 6,
+                        showLine: false,
+                        hidden: true
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                interaction: {
+                    mode: 'nearest',
+                    intersect: false,
+                },
+                plugins: {
+                    tooltip: {
+                        enabled: true,
+                        callbacks: {
+                            label: function(context) {
+                                return context.dataset.label + ': ' + context.parsed.y.toFixed(2) + '%';
+                            }
+                        }
+                    },
+                    legend: {
+                        display: true,
+                        position: 'top',
+                    },
+                },
+                scales: {
+                    x: {
+                        type: 'linear',
+                        position: 'bottom',
+                        title: {
+                            display: true,
+                            text: 'f (%)'
+                        },
+                        ticks: {
+                            callback: function(value) {
+                                return value + '%';
+                            },
+                            stepSize: 10,
+                            max: 100,
+                            min: 0
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Value (%)'
+                        },
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return value + '%';
+                            },
+                            stepSize: 20,
+                            max: 100,
+                            min: 0
+                        }
+                    }
+                }
+            }
+        });
+
+        // Calculation Functions
+        function calculateFromJF() {
+            const JF_input = document.getElementById('inputJF').value.trim();
+            const JF = parseFloat(JF_input);
+            if(isNaN(JF) || JF < -100 || JF > 100) {
+                document.getElementById('resultFromJF').innerText = 'Please enter a valid JF between -100% and 100%.';
+                clearHighlights();
+                return;
+            }
+            // Convert percentage to decimal
+            const JF_decimal = JF / 100;
+            // Handle case when 1 + JF_decimal = 0 (JF = -100%)
+            if (JF_decimal === -1) {
+                document.getElementById('resultFromJF').innerText = 'Undefined (division by zero). JF cannot be -100%.';
+                clearHighlights();
+                return;
+            }
+            // Calculate f
+            const f_decimal = (1 - JF_decimal) / (1 + JF_decimal);
+            const f_percent = f_decimal * 100;
+
+            // Ensure f is within [0, 100]
+            if (f_percent < 0 || f_percent > 100) {
+                document.getElementById('resultFromJF').innerText = 'Calculated f is out of bounds (0% to 100%). Please check your input.';
+                clearHighlights();
+                return;
+            }
+
+            // Calculate SEF
+            const SEF_decimal = 1 - f_decimal;
+            const SEF_percent = SEF_decimal * 100;
+
+            // Calculate Difference SEF - JF
+            const diff_decimal = SEF_decimal - JF_decimal;
+            const diff_percent = diff_decimal * 100;
+
+            // Display results including f
+            document.getElementById('resultFromJF').innerHTML = `
+                SEF = ${SEF_percent.toFixed(2)}%<br>
+                SEF - JF = ${diff_percent.toFixed(2)}%<br>
+                f = ${f_percent.toFixed(2)}%
+            `;
+
+            // Debugging: Log calculated values
+            console.log(`JF_percent: ${JF}, f_percent: ${f_percent}, SEF_percent: ${SEF_percent}`);
+
+            // Plot on the graph
+            plotHighlights(f_percent, JF, SEF_percent);
+        }
+
+        function calculateFromSEF() {
+            const SEF_input = document.getElementById('inputSEF').value.trim();
+            const SEF = parseFloat(SEF_input);
+            if(isNaN(SEF) || SEF < 0 || SEF > 200) {
+                document.getElementById('resultFromSEF').innerText = 'Please enter a valid SEF between 0% and 200%.';
+                clearHighlights();
+                return;
+            }
+            // Convert percentage to decimal
+            const SEF_decimal = SEF / 100;
+            // Handle case when 2 - SEF_decimal = 0 (SEF = 200%)
+            if (SEF_decimal === 2) {
+                document.getElementById('resultFromSEF').innerText = 'Undefined (division by zero). SEF cannot be 200%.';
+                clearHighlights();
+                return;
+            }
+            // Calculate f
+            const f_decimal = 1 - SEF_decimal;
+            const f_percent = f_decimal * 100;
+
+            // Ensure f is within [0, 100]
+            if (f_percent < 0 || f_percent > 100) {
+                document.getElementById('resultFromSEF').innerText = 'Calculated f is out of bounds (0% to 100%). Please check your input.';
+                clearHighlights();
+                return;
+            }
+
+            // Calculate JF
+            const JF_decimal = (1 - f_decimal) / (1 + f_decimal);
+            const JF_percent = JF_decimal * 100;
+
+            // Calculate Difference SEF - JF
+            const diff_decimal = SEF_decimal - JF_decimal;
+            const diff_percent = diff_decimal * 100;
+
+            // Display results including f
+            document.getElementById('resultFromSEF').innerHTML = `
+                JF = ${JF_percent.toFixed(2)}%<br>
+                SEF - JF = ${diff_percent.toFixed(2)}%<br>
+                f = ${f_percent.toFixed(2)}%
+                
+            `;
+
+            // Debugging: Log calculated values
+            console.log(`JF_percent: ${JF_percent}, f_percent: ${f_percent}, SEF_percent: ${SEF}`);
+
+            // Plot on the graph
+            plotHighlights(f_percent, JF_percent, SEF);
+        }
+
+        // Function to plot highlights on the graph
+        function plotHighlights(f_percent, JF_percent, SEF_percent) {
+            console.log(`Plot Highlights - f: ${f_percent}%, JF: ${JF_percent}%, SEF: ${SEF_percent}%`);
+
+            // Clear previous highlights
+            clearHighlights();
+
+            // Add Difference Line
+            functionsChart.data.datasets[2].data = [
+                {x: f_percent, y: JF_percent},
+                {x: f_percent, y: SEF_percent}
+            ];
+            functionsChart.data.datasets[2].hidden = false;
+
+            // Add SEF Point
+            functionsChart.data.datasets[3].data = [
+                {x: f_percent, y: SEF_percent}
+            ];
+            functionsChart.data.datasets[3].hidden = false;
+
+            // Add JF Point
+            functionsChart.data.datasets[4].data = [
+                {x: f_percent, y: JF_percent}
+            ];
+            functionsChart.data.datasets[4].hidden = false;
+
+            // Update the chart
+            functionsChart.update();
+        }
+
+        // Function to clear previous highlights
+        function clearHighlights() {
+            // Clear Difference Line
+            functionsChart.data.datasets[2].data = [];
+            functionsChart.data.datasets[2].hidden = true;
+
+            // Clear SEF Point
+            functionsChart.data.datasets[3].data = [];
+            functionsChart.data.datasets[3].hidden = true;
+
+            // Clear JF Point
+            functionsChart.data.datasets[4].data = [];
+            functionsChart.data.datasets[4].hidden = true;
+
+            // Update the chart
+            functionsChart.update();
+        }
+    </script>
+</body>
+</html>
