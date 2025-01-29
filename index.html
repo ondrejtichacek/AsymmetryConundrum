@@ -337,19 +337,14 @@
         function calculateFromSEF() {
             const SEF_input = document.getElementById('inputSEF').value.trim();
             const SEF = parseFloat(SEF_input);
-            if(isNaN(SEF) || SEF < 0 || SEF > 200) {
-                document.getElementById('resultFromSEF').innerText = 'Please enter a valid SEF between 0% and 200%.';
+            if(isNaN(SEF) || SEF < 0 || SEF > 100) {
+                document.getElementById('resultFromSEF').innerText = 'Please enter a valid SEF between 0% and 100%.';
                 clearHighlights();
                 return;
             }
             // Convert percentage to decimal
             const SEF_decimal = SEF / 100;
-            // Handle case when 2 - SEF_decimal = 0 (SEF = 200%)
-            if (SEF_decimal === 2) {
-                document.getElementById('resultFromSEF').innerText = 'Undefined (division by zero). SEF cannot be 200%.';
-                clearHighlights();
-                return;
-            }
+           
             // Calculate f
             const f_decimal = 1 - SEF_decimal;
             const f_percent = f_decimal * 100;
